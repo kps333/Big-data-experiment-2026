@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《假设、排序与代价》全解：从两条推导到「为什么分不开」</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#5a5a5a; --accent:#1f4e79; --rule:#c9c9c9; --bg:#fdfdfb; --card:#ffffff; }
+  html { background:var(--bg); }
+  body { font-family:"Source Han Serif SC","Noto Serif CJK SC","Times New Roman",SimSun,serif;
+         color:var(--ink); background:var(--bg); margin:0; line-height:1.75; font-size:16px; }
+  .page { max-width:880px; margin:0 auto; padding:48px 56px 80px; background:var(--card);
+          box-shadow:0 0 24px rgba(0,0,0,.06); }
+  header.titleblock { text-align:center; border-bottom:2px solid var(--accent); padding-bottom:28px; margin-bottom:32px; }
+  h1 { font-size:26px; line-height:1.5; margin:8px 0 4px; color:var(--accent); }
+  .subtitle { font-size:16px; color:var(--muted); margin-bottom:18px; }
+  .authors { font-size:15px; }
+  .affil { font-size:13px; color:var(--muted); }
+  .meta-line { font-size:12.5px; color:var(--muted); margin-top:12px; }
+  h2 { font-size:20px; color:var(--accent); border-left:4px solid var(--accent); padding-left:10px; margin-top:44px; }
+  h3 { font-size:17px; margin-top:28px; }
+  .abstract { background:#f4f7fa; border:1px solid #d8e2ec; padding:20px 24px; font-size:15px; }
+  .abstract .kw { margin-top:10px; font-size:14px; }
+  p { margin:12px 0; text-align:justify; }
+  table.data { border-collapse:collapse; width:100%; font-size:13px; margin:18px 0; font-variant-numeric:tabular-nums; }
+  table.data caption, .figcap { caption-side:top; text-align:left; font-size:13.5px; color:var(--muted); padding:6px 0; }
+  .figcap { margin-top:10px; }
+  .figcap b, table.data caption b { color:var(--ink); }
+  table.data th { background:var(--accent); color:#fff; padding:6px 8px; font-weight:600; text-align:center; }
+  table.data td { border-bottom:1px solid var(--rule); padding:5px 8px; text-align:center; }
+  table.data td.l { text-align:left; }
+  table.data tr:hover td { background:#f0f5fa; }
+  figure { margin:26px 0; text-align:center; }
+  figure svg { max-width:100%; height:auto; }
+  .formula { font-family:"Cambria Math","STIX Two Math",serif; font-style:italic; text-align:center; margin:14px 0; font-size:17px; }
+  .callout { border-left:4px solid #b8860b; background:#fbf7ec; padding:12px 18px; font-size:14.5px; margin:18px 0; }
+  .neg { border-left:4px solid #a33; background:#faf1f1; padding:12px 18px; font-size:14.5px; margin:18px 0; }
+  .ok { border-left:4px solid #2a7f4f; background:#f0f7f2; padding:12px 18px; font-size:14.5px; margin:18px 0; }
+  code { font-family:Consolas,"JetBrains Mono",monospace; font-size:13px; background:#eef1f4; padding:1px 5px; border-radius:3px; }
+  pre { background:#f5f6f8; border:1px solid var(--rule); padding:12px 16px; font-size:12.5px; overflow-x:auto; line-height:1.5; }
+  ol.refs { font-size:13.5px; padding-left:26px; }
+  ol.refs li { margin:6px 0; }
+  .small { font-size:12.5px; color:var(--muted); }
+  .verdict-LDA{background:#1f4e79;color:#fff;padding:1px 8px;border-radius:10px;font-size:12px;}
+  .verdict-Logit{background:#a33;color:#fff;padding:1px 8px;border-radius:10px;font-size:12px;}
+  .verdict-tie{background:#8aa7c4;color:#fff;padding:1px 8px;border-radius:10px;font-size:12px;}
+  .verdict-undecided{background:#d9d9d9;color:#444;padding:1px 8px;border-radius:10px;font-size:12px;}
+  footer { margin-top:56px; padding-top:16px; border-top:1px solid var(--rule); font-size:12px; color:var(--muted); text-align:center; }
+  @media print { .page{box-shadow:none;padding:0} }
+
+
+  /* ============ 手稿排版（arXiv article 风格）============ */
+  :root { --ink:#111; --muted:#444; }
+  html { background:#ecebe7; }
+  body { font-family:"Times New Roman","Nimbus Roman No9 L","Source Han Serif SC","Songti SC",SimSun,serif;
+         color:var(--ink); background:#ecebe7; margin:0; font-size:13.2px; line-height:1.62; }
+  .page { max-width:640px; margin:0 auto; padding:58px 64px 72px; background:#fff;
+          box-shadow:0 1px 2px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.055); }
+  header.titleblock { text-align:center; border:0; padding:0 0 16px; margin:0 0 8px; }
+  h1 { font-size:20.5px; line-height:1.42; font-weight:700; color:#111; margin:0 0 9px; letter-spacing:.2px; }
+  .subtitle { font-size:13.4px; font-style:italic; color:#3a3a3a; margin:0 0 14px; }
+  .authors { font-size:13px; }
+  .affil { font-size:11.6px; font-style:italic; color:#444; }
+  .meta-line { font-size:10.6px; color:#555; margin-top:11px; letter-spacing:.05em; }
+  .abstract { background:none; border:0; padding:0 7%; margin:0 0 24px; font-size:12.4px; line-height:1.58; }
+  .abstract p { text-indent:0; margin:0 0 8px; text-align:justify; }
+  .abstract .kw { margin-top:9px; font-size:11.5px; color:#333; }
+  h2 { font-size:14.6px; font-weight:700; color:#111; border:0; padding:0; margin:26px 0 8px; letter-spacing:.2px; }
+  h3 { font-size:13.2px; font-weight:700; font-style:italic; color:#111; margin:18px 0 6px; }
+  p { margin:0 0 7px; text-align:justify; text-indent:1.7em; }
+  h2 + p, h3 + p { text-indent:0; }
+  /* 定义 / 注 / 问题 / 结论：去色块，按定理环境缩进 */
+  .def, .rem, .prob, .thm, .callout, .neg, .ok {
+      background:none !important; border:0 !important; border-left:0 !important;
+      padding:0 0 0 1.7em !important; margin:11px 0 !important; font-size:12.6px; line-height:1.6; }
+  .def p, .rem p, .prob p, .thm p, .callout p, .neg p, .ok p { text-indent:0; margin:0 0 5px; }
+  .def p:last-child, .rem p:last-child, .prob p:last-child, .ok p:last-child,
+  .callout p:last-child, .neg p:last-child, .thm p:last-child { margin-bottom:0; }
+  .formula { display:block; text-align:center; margin:9px 0; font-size:13px;
+             font-family:"Cambria Math","STIX Two Math","Times New Roman",serif; }
+  p > .formula { text-indent:0; }
+  /* 表：booktabs 三线表 */
+  table.data { border-collapse:collapse; width:100%; margin:16px 0 14px; font-size:11.1px; line-height:1.45;
+               font-variant-numeric:tabular-nums; border-top:1.3px solid #000; border-bottom:1.3px solid #000; }
+  table.data caption { caption-side:top; text-align:left; font-size:11.4px; color:#111; padding:0 0 5px; }
+  table.data th { background:none !important; color:#111 !important; border:0 !important;
+                  border-bottom:.8px solid #000 !important; padding:3px 5px; font-weight:700; }
+  table.data td { border:0 !important; padding:3px 5px; }
+  table.data tr:hover td { background:none !important; }
+  table.data td.l { text-align:left; }
+  figure { margin:18px 0 16px; text-align:center; }
+  figure svg { max-width:100%; height:auto; }
+  .figcap { margin-top:6px; font-size:11.4px; color:#111; text-align:left; line-height:1.5; padding:0 4%; }
+  .figcap b { font-weight:700; }
+  code { font-family:"Cascadia Mono",Consolas,"Courier New",monospace; font-size:11.4px; background:none; padding:0; border:0; }
+  pre { background:none; border:0; padding:0 0 0 1.7em; font-size:11.2px; line-height:1.5; overflow-x:auto; }
+  ol.refs { font-size:11.4px; padding-left:0; list-style:none; }
+  ol.refs li { margin:3px 0; padding-left:2.2em; text-indent:-2.2em; }
+  .verdict-LDA, .verdict-Logit, .verdict-tie, .verdict-undecided {
+      background:none !important; color:inherit !important; padding:0 !important;
+      border-radius:0 !important; font-size:inherit !important; }
+  .verdict-LDA { font-weight:700; }
+  .verdict-Logit { font-style:italic; }
+  a { color:#111; text-decoration:none; border-bottom:.5px dotted #8a8a8a; }
+  .small { font-size:11.2px; color:#555; }
+  footer { margin-top:34px; border-top:.8px solid #bbb; padding-top:10px; font-size:10.6px;
+           color:#555; text-align:center; letter-spacing:.04em; }
+  @media print { html, body { background:#fff; } .page { box-shadow:none; max-width:none; padding:0; } }
+</style>
+<style>code{font-family:"Consolas","Courier New",monospace;font-size:11.3px;background:none;padding:0;border:0}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="titleblock">
+  <div class="small">Companion · 全解与推导</div>
+  <h1>《假设、排序与代价》全解：<br>从两条推导到「为什么分不开」</h1>
+  <div class="subtitle">线性判别分析与 Logistic 回归的完整建模、估计与等价性证明<br>附论文逐节精读</div>
+  <div class="authors">作者：鱼鱼（蓝色大肥鱼）</div>
+  <div class="affil">DeepSeek 社区 · 《大数据实践》课程 · Linear-models 模块</div>
+  <div class="meta-line">配套论文：report/linear-models-paper.html · 2026-11-04 · 本文件不引入新实验，只做推导、注解与对照</div>
+</header>
+
+<section class="abstract">
+<p><b>摘要</b>　本文件是论文《假设、排序与代价：线性判别分析与 Logistic 回归的「交叉区域」在哪里》的配套全解。它做三件事：(1) 补全论文因篇幅压缩掉的推导，重点是 LDA 的后验线性化、Fisher 判别的等价性、Logistic 的得分方程与 IRLS、以及贝叶斯上界 <span class="formula">AUC* = Φ(d′/√2)</span> 的来历；(2) 建立一条贯穿全文的命题链——<b>等协方差高斯成立时，LDA 与 Logistic 属于同一个模型族、收敛到同一个方向、而 AUC 只依赖方向</b>，因此二者的排序能力在理论上就该重合，实验里的「几乎不能分开」不是测量失败，而是被三定理逼出来的必然；(3) 用这条链解释论文的 36 个比较点：27 个未分、6 个系统性平局、2 个 Logistic 胜、1 个 LDA 胜，并说明差异为何只在概率、阈值与代价三层显现（乳腺 Brier 6.5 倍、代价约 9 倍）。</p>
+<p class="kw"><b>关键词</b>　线性判别分析；Logistic 回归；等协方差高斯；得分方程；AUC 单调不变性；渐近等效性；预注册</p>
+</section>
+
+<h2>0　阅读说明</h2>
+<p>这份文件不是论文的替代品，而是它的<b>带推导的边注本</b>。论文为了在 36 个比较点上保持叙事紧凑，把大量代数压成了一句「推导见附录 C」；全解把这些代数一步一步摊开，并在每一步标注它在论文里的位置。</p>
+<p>三种读法：<b>想补数学</b>，直接读 §2、§3、§4；<b>想理解实验</b>，读 §1、§5、§6；<b>想查证某个数字</b>，读附录 A、B。</p>
+<p>全文引用论文时写作「论文 §4.4」；引用本文件写作「§4.2」。<b>本文件的表号（表 0–表 9）与论文的表号各自独立编号</b>，出现歧义时一律以「论文表 N」显式标注。所有实验数字都来自论文与 <code>experiment/lda_log_lab.py</code> 的产物，本文件<b>没有运行任何新实验</b>，也没有对已有结果做二次挑选。</p>
+
+<table class="data">
+<caption>表 0：本文件与论文的章节映射</caption>
+<tr><th>本文件</th><th>对应论文位置</th><th>本文件补了什么</th></tr>
+<tr><td class="l">§1 记号与四个量</td><td class="l">论文 §2.1–§2.2、定义 2.1–2.6</td><td class="l">符号表、四个量的用途分工</td></tr>
+<tr><td class="l">§2 LDA 全推导</td><td class="l">论文 §3.3、附录 C.1–C.2、C.4</td><td class="l">后验线性化的逐步代数、Fisher 等价证明、池化 Σ̂ 的性质</td></tr>
+<tr><td class="l">§3 Logistic 全推导</td><td class="l">论文 定义 2.3、§3.3、§3.6-2</td><td class="l">似然、得分方程、凸性、IRLS 迭代式、L2 的两种解释、完全分离</td></tr>
+<tr><td class="l">§4 为什么分不开</td><td class="l">论文 §4.1–§4.2、§5.1</td><td class="l">「同族—同极限—同排序」三层命题及其证明</td></tr>
+<tr><td class="l">§5 什么时候分开</td><td class="l">论文 §4.3–§4.5、§5.3</td><td class="l">五个分岔机制，各配一个可核对的数字</td></tr>
+<tr><td class="l">§6 逐节精读</td><td class="l">论文 §1–§5、附录 A–F</td><td class="l">每节的意图、关键数字、易误读处</td></tr>
+<tr><td class="l">§7 常见误解</td><td class="l">—</td><td class="l">十条 FAQ，多为教学中反复出现的疑问</td></tr>
+</table>
+
+<h2>1　记号与四个量</h2>
+
+<h3>1.1 符号表</h3>
+<table class="data">
+<caption>表 1：全文符号</caption>
+<tr><th>符号</th><th>含义</th><th>在本实验中的取值</th></tr>
+<tr><td>x ∈ ℝ<sup>d</sup></td><td class="l">特征向量</td><td class="l">d 由 2 到 50；心脏 one-hot 后 d≈22</td></tr>
+<tr><td>y ∈ {0,1}</td><td class="l">类别标签</td><td class="l">正类 = 患病 / 恶性 / Outcome=1</td></tr>
+<tr><td>π<sub>k</sub></td><td class="l">类先验 P(Y=k)</td><td class="l">合成数据固定 π<sub>1</sub>=0.44；真实数据用样本比例</td></tr>
+<tr><td>μ<sub>k</sub>, Σ<sub>k</sub></td><td class="l">类条件均值与协方差</td><td class="l">μ<sub>0</sub>=0，μ<sub>1</sub>=SEP·e<sub>1</sub></td></tr>
+<tr><td>Δ</td><td class="l">类间均值差 μ<sub>1</sub>−μ<sub>0</sub></td><td class="l">= SEP·e<sub>1</sub></td></tr>
+<tr><td>d′</td><td class="l">标准化均值差 √(ΔᵀΣ⁻¹Δ)</td><td class="l">λ=0 时 d′=SEP=1.46575</td></tr>
+<tr><td>λ</td><td class="l">类间协方差分歧强度</td><td class="l">{0, .1, .2, .4, .6, .8, 1}</td></tr>
+<tr><td>γ</td><td class="l">逐坐标幂变换指数</td><td class="l">{1, 1.3, 1.6, 2}</td></tr>
+<tr><td>s(x)</td><td class="l">判别分数</td><td class="l">两模型均为 β<sub>0</sub>+xᵀβ</td></tr>
+<tr><td>AUC</td><td class="l">ROC 曲线下面积</td><td class="l">= P(s<sub>1</sub>&gt;s<sub>0</sub>)</td></tr>
+<tr><td>w, τ</td><td class="l">漏报权重、判别阈值</td><td class="l">w∈{1,5,20}，主场景 5；τ∈[0.05,0.95]</td></tr>
+<tr><td>α</td><td class="l">L2 惩罚强度 = 1/C</td><td class="l">{100,10,1,0.1,0.01} 路径</td></tr>
+<tr><td>R</td><td class="l">每个点的重复次数</td><td class="l">合成 200，锚点 10</td></tr>
+</table>
+
+<h3>1.2 生成过程：把「假设」变成旋钮</h3>
+<p>论文的动作在方法论上只有一句：<b>把 LDA 的假设拆成两个可以独立拧的旋钮</b>。等协方差高斯包含两个可分离的条件——类条件分布是高斯的，且两类共享 Σ。前者对应 γ，后者对应 λ。</p>
+<p class="formula">x | y=k ~ N(μ<sub>k</sub>, Σ<sub>k</sub>)，　μ<sub>0</sub>=0，　μ<sub>1</sub>=SEP·e<sub>1</sub></p>
+<p class="formula">Σ<sub>0</sub> = I<sub>d</sub>，　Σ<sub>1</sub> = diag(1+3λ, …, 1+3λ, 1, …, 1)　（前 ⌈d/2⌉ 维被放大）</p>
+<p class="formula">X ← sign(X) · |X|<sup>γ</sup>　（逐坐标施加，γ=1 时为恒等）</p>
+<p>两处取舍值得注意。第一，<b>λ 只放大正类的一半维度</b>，而不是全部：若全部放大，Σ<sub>1</sub> 与 Σ<sub>0</sub> 只差一个标量，判别方向 <span class="formula">Σ⁻¹Δ</span> 反而不变，违背会被「尺度」吸收掉。第二，<b>γ 用符号保持的幂变换而不是加偏态参数</b>：这样它仍是双射（保序），从而不改变贝叶斯上界（§2.2、论文附录 C.3），把「分布形状」与「可分性」彻底分开。这是让 γ 成为「纯违背轴」的技术前提。</p>
+
+<h3>1.3 四个量：各自回答一个不同的问题</h3>
+<p>论文定义了四个量，它们不是彼此的替代品，而是四个不同问题的答案。混用这四个量是初学者最常见的错误。</p>
+<table class="data">
+<caption>表 2：四个量的分工</caption>
+<tr><th>量</th><th>定义</th><th>回答的问题</th><th>不能用来回答</th></tr>
+<tr><td class="l">贝叶斯上界 AUC*</td><td class="l">真后验可达的最优 AUC</td><td class="l">还剩多少可捡？（天花板）</td><td class="l">哪个模型更好</td></tr>
+<tr><td class="l">ΔAUC</td><td class="l">AUC<sub>LDA</sub>−AUC<sub>logit</sub>，配对 per-rep</td><td class="l">差多少？（幅度）</td><td class="l">方向是否稳定</td></tr>
+<tr><td class="l">胜率 π̂</td><td class="l">LDA 赢的重复占比</td><td class="l">方向稳不稳？（符号一致性）</td><td class="l">差多少、是否显著</td></tr>
+<tr><td class="l">交叉点 x*</td><td class="l">胜率 logit 拟合的 0.5 处</td><td class="l">天平在哪翻转？（位置）</td><td class="l">翻转幅度有多大</td></tr>
+</table>
+<p>判定三分规则把其中两个组合起来（论文定义 2.6，先于任何结果冻结）：</p>
+<p class="formula">p<sub>Holm</sub> &lt; 0.05 且 |ΔAUC| &gt; 0.005 ⇒ 判定；　显著但 |ΔAUC| ≤ 0.005 ⇒ 系统性平局；　其余 ⇒ 未分</p>
+<p>为什么必须双条件？因为单看显著性会把「稳定但极小」的差异判成胜负（γ=1.3 那点 Δ=−0.0007、p=0.017 就是这样），单看幅度又会把「大幅但不稳」的噪声判成胜负。0.005 这个阈值是预注册的，不是事后挑的——这一点比阈值取多少更重要。</p>
+
+
+<h2>2　线性判别分析：从类条件密度到一条直线</h2>
+
+<h3>2.1 三条假设，一条也不能少</h3>
+<p>LDA 不是「假设边界是线性的」，而是<b>从三个关于数据生成的假设出发，把线性边界推导出来</b>。这个区别很重要：前一种说法让人误以为 LDA 比 Logistic 多假设了「线性」，其实两者对边界形状的假设完全相同（§4.1），LDA 多假设的是<b>数据怎么生成</b>。</p>
+<p class="formula">(A1)　x | y=k ~ N(μ<sub>k</sub>, Σ<sub>k</sub>)　——类条件密度是多元正态</p>
+<p class="formula">(A2)　Σ<sub>0</sub> = Σ<sub>1</sub> = Σ　——两类共享协方差</p>
+<p class="formula">(A3)　π<sub>k</sub> 已知或可用样本比例估计</p>
+<p>A1、A2 合起来就是「等协方差高斯」。A3 只影响截距，不影响方向（§2.3）。</p>
+
+<h3>2.2 后验 log-odds 的逐步代数</h3>
+<p>目标是算出 <span class="formula">log[p(y=1|x)/p(y=0|x)]</span>，看它是不是 x 的线性函数。由贝叶斯公式：</p>
+<p class="formula">log[p(1|x)/p(0|x)] = log(π<sub>1</sub>/π<sub>0</sub>) + log p(x|1) − log p(x|0)</p>
+<p>多元正态的对数密度（两类共享同一个 Σ，故行列式项与常数项相消）：</p>
+<p class="formula">log p(x|k) = −½ (x−μ<sub>k</sub>)ᵀΣ⁻¹(x−μ<sub>k</sub>) + C</p>
+<p>所以关键是算两个二次型之差。先把每个二次型展开：</p>
+<p class="formula">(x−μ<sub>k</sub>)ᵀΣ⁻¹(x−μ<sub>k</sub>) = xᵀΣ⁻¹x − 2xᵀΣ⁻¹μ<sub>k</sub> + μ<sub>k</sub>ᵀΣ⁻¹μ<sub>k</sub></p>
+<p>相减，<span class="formula">xᵀΣ⁻¹x</span> 这一项在两侧完全相同，<b>直接抵消</b>——这是整条推导的枢纽：</p>
+<p class="formula">(x−μ<sub>1</sub>)ᵀΣ⁻¹(x−μ<sub>1</sub>) − (x−μ<sub>0</sub>)ᵀΣ⁻¹(x−μ<sub>0</sub>) = −2xᵀΣ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>) + (μ<sub>1</sub>ᵀΣ⁻¹μ<sub>1</sub> − μ<sub>0</sub>ᵀΣ⁻¹μ<sub>0</sub>)</p>
+<p>代回，并利用恒等式 <span class="formula">½(aᵀMa − bᵀMb) = ½(a+b)ᵀM(a−b)</span>（M 对称）：</p>
+<p class="formula">log[p(1|x)/p(0|x)] = β<sub>0</sub> + xᵀβ，　β = Σ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>)</p>
+<p class="formula">β<sub>0</sub> = log(π<sub>1</sub>/π<sub>0</sub>) − ½(μ<sub>1</sub>+μ<sub>0</sub>)ᵀΣ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>)</p>
+<p>这就是论文定义 2.2 的来历，也是代码里 <code>experiment/lda_log_lab.py:305</code> 那一行的来历：</p>
+<p class="formula">beta0 = −0.5·(c1 − c0) + log(π<sub>1</sub>/π<sub>0</sub>)，　c<sub>k</sub> = μ<sub>k</sub>ᵀΣ⁻¹μ<sub>k</sub></p>
+<p><b>这一步的结论</b>：后验概率是 <span class="formula">σ(β<sub>0</sub>+xᵀβ)</span> 的形式，其中 σ 是 sigmoid。而这正是 Logistic 回归的模型形式。LDA 与 Logistic 的全部关系，都从这一行展开（§4.1）。</p>
+
+<h3>2.3 决策边界与先验的角色</h3>
+<p>决策规则是「后验大于 0.5 就判正类」，边界是 <span class="formula">β<sub>0</sub>+xᵀβ = 0</span>：</p>
+<p class="formula">xᵀΣ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>) = ½(μ<sub>1</sub>+μ<sub>0</sub>)ᵀΣ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>) − log(π<sub>1</sub>/π<sub>0</sub>)</p>
+<p>左端只由 <b>方向</b> 决定，右端的常数项决定这个平面<b>平移多少</b>。三点推论：</p>
+<p>(1) 法向量是 <span class="formula">Σ⁻¹Δ</span>，与先验无关；(2) 先验只改变平移量，不改变朝向；(3) 先验相等时边界恰是两类中心的垂直平分面（在 Σ⁻¹ 度量下）。</p>
+<p>第 (3) 点用白化坐标看好：令 <span class="formula">u = Σ⁻¹ᐟ²x</span>，则两类的协方差都变成 I，边界变成 u 空间里的垂直平分面。几何上，<b>等协方差的含义就是「两类是同一个球的两次平移」</b>，而球的垂直平分面自然是平面。</p>
+<p>反过来，若 Σ<sub>0</sub>≠Σ<sub>1</sub>，白化后两类的形状不同，垂直平分面不存在，最优点变成二次曲面（论文 <code>lr_score</code> 的 <span class="formula">qcoef = 0.5(1−1/v)</span> 就是那个二次项的系数）。</p>
+
+<h3>2.4 Fisher 判别：另一条路，同一个终点</h3>
+<p>Fisher 的思路与贝叶斯完全不同：他不假设分布，只要求「投影后两类分得开」。定义类间散度与类内散度之比：</p>
+<p class="formula">J(w) = (wᵀΔ)² / (wᵀΣw)</p>
+<p>分子是投影后的均值差平方，分母是投影后的（共享）方差。J 对 w 的缩放不变（分子分母同时乘 c²），所以只关心方向。</p>
+<p><b>解法一（柯西—施瓦茨，最简洁）</b>：令 <span class="formula">u = Σ<sup>1/2</sup>w</span>，<span class="formula">z = Σ<sup>1/2</sup>Δ</span>，则</p>
+<p class="formula">J = (uᵀz)² / (uᵀu) ≤ ‖z‖² = ΔᵀΣ⁻¹Δ</p>
+<p>等号当且仅当 <span class="formula">u ∝ z</span>，即 <span class="formula">w ∝ Σ⁻¹Δ</span>。最大值 <span class="formula">ΔᵀΣ⁻¹Δ = d′²</span>。</p>
+<p><b>解法二（求导验证）</b>：对 J 求梯度并令其为零，得 <span class="formula">Δ = [(wᵀΔ)/(wᵀΣw)]·Σw</span>，即 <span class="formula">Σw ∝ Δ</span>，同解。</p>
+<p><b>结论</b>：Fisher 的最优方向与贝叶斯后验的系数方向<b>完全一致</b>。这不是巧合——两者都在最大化同一个量 d′²，只是一个从分布出发、一个从散度出发。这也解释了为什么「LDA」这个名字下其实藏着两套叙事（生成式 / 判别式），而它们在两类问题上殊途同归。</p>
+<p>顺带得到一个有用的量：最大化后的 <span class="formula">J = d′²</span>，正是 §2.2 中「均值差」与「方差」共同等于的那个 d′²。这也让 §2.2 的推导与 Fisher 视角对上了。</p>
+
+<h3>2.5 参数估计：三个估计量，一个隐藏的偏差</h3>
+<p>实践中 μ、Σ 未知，用样本估计（论文 §3.3）：</p>
+<p class="formula">μ̂<sub>k</sub> = (1/n<sub>k</sub>) Σ<sub>i:y<sub>i</sub>=k</sub> x<sub>i</sub></p>
+<p class="formula">Σ̂ = [(n<sub>0</sub>−1)S<sub>0</sub> + (n<sub>1</sub>−1)S<sub>1</sub>] / (n−2)，　S<sub>k</sub> = 类内样本协方差</p>
+<p>为什么分母是 n−2 而不是 n？因为估了两个均值，每个均值吃掉一个自由度；两类合计损失 2 个自由度。这样 Σ̂ 才是 Σ 的<b>无偏</b>估计（<span class="formula">(n−2)Σ̂ ~ Wishart<sub>d</sub>(n−2, Σ)</span>）。</p>
+<p>但这里有一个初学者常忽略的陷阱：<b>Σ̂ 无偏，不代表 Σ̂⁻¹ 无偏</b>。由逆 Wishart 的性质，</p>
+<p class="formula">E[Σ̂⁻¹] = [(n−2)/(n−2−d−1)]·Σ⁻¹　（当 n−2 &gt; d+1）</p>
+<p>即 <span class="formula">Σ̂⁻¹</span> 系统性<b>放大</b>了 Σ⁻¹，放大倍数随 d 增大。这就是「LDA 在 d 与 n 同阶时失稳」的代数根源，也解释了为什么需要收缩估计 <span class="formula">Σ<sub>δ</sub></span>（论文附录 C.4）。本实验在 d=50、n=300 时 d/(n−2)≈0.17，放大因子约 1.2，尚在可控范围——这是 RQ1 在 d 轴上「看不见差异」的原因之一（§5.3）。</p>
+
+<h3>2.6 判别方向的三个性质</h3>
+<p><b>(P1) 尺度不变。</b><span class="formula">Σ⁻¹Δ</span> 对特征的单位变换是协变的：若 x 变成 Ax，则 Σ 变成 AΣAᵀ、Δ 变成 AΔ，方向变成 <span class="formula">A⁻ᵀΣ⁻¹Δ</span>，恰是原方向在 A 下的像。这意味着<b>标准化不改变 LDA 的分界面</b>（只改变系数的数值）。这也是课件里那句「系数依赖单位」的技术内容。</p>
+<p><b>(P2) 白化后是欧氏垂直平分面。</b>见 §2.3。</p>
+<p><b>(P3) 共线时方向爆炸。</b>若 Σ 有接近零的特征值（特征高度相关），<span class="formula">Σ⁻¹</span> 在该方向的方差被放大 1/ε，Δ 若在该方向有微小分量，方向就会被放大成主导。这是 LDA 在共线数据上「系数符号乱跳」的原因，也是论文 RQ4 关注「系数稳定 ≠ 预测稳定」的动机。</p>
+
+<h3>2.7 概率输出与它的含义</h3>
+<p>LDA 天然输出概率：<span class="formula">p̂(x) = σ(β̂<sub>0</sub>+xᵀβ̂)</span>，其中 σ 是 sigmoid。注意这里的概率是<b>模型内在的</b>，不是事后校准的。</p>
+<p>它的可靠性完全取决于 A1、A2 是否成立。若假设成立，它就是参数模型下的极大似然估计（近似），概率应近似校准；若违背，它会输出<b>过度自信</b>的概率——因为 <span class="formula">Σ̂⁻¹</span> 的放大效应会把 logit 推离 0，让概率贴住 0 和 1。</p>
+<p>论文在乳腺锚点上量到了这一点：LDA 的 Brier 是 0.131，Logistic 是 0.020，<b>6.5 倍</b>；logloss 0.658 对 0.078。而同一组数据的 ΔAUC 只有 −0.0042。这个反差就是「AUC 盲区」的直接证据：<b>排序对了，概率错了</b>，而 AUC 只看排序（§4.3）。</p>
+
+
+<h2>3　Logistic 回归：只要一个线性 logit</h2>
+
+<h3>3.1 一条假设，比 LDA 少得多</h3>
+<p>Logistic 回归对数据的假设只有一条：</p>
+<p class="formula">(B1)　log[p(1|x)/p(0|x)] = β<sub>0</sub> + xᵀβ　——logit 是线性的</p>
+<p>它<b>没有</b>说 x 服从正态，<b>没有</b>说两类协方差相同，也<b>没有</b>说边界来自密度比。它只是把「对数几率是线性的」当作一个建模选择，然后用极大似然去拟合。</p>
+<p>这一条与 LDA 的结论形式完全相同（§2.2 末尾）。差别在于：对 LDA 而言，<b>线性 logit 是推导出来的结论</b>；对 Logistic 而言，<b>线性 logit 是出发点</b>。所以 LDA 的假设集严格包含 Logistic 的——这正是「LDA 好用 ⇒ Logistic 也好用」的第一层理由（§4.1）。</p>
+
+<h3>3.2 似然与得分方程</h3>
+<p>给定 <span class="formula">p<sub>i</sub> = σ(β<sub>0</sub>+x<sub>i</sub>ᵀβ)</span>，对数似然为</p>
+<p class="formula">ℓ(β<sub>0</sub>,β) = Σ<sub>i</sub> [ y<sub>i</sub> log p<sub>i</sub> + (1−y<sub>i</sub>) log(1−p<sub>i</sub>) ]</p>
+<p>利用 <span class="formula">σ′(z)=σ(z)(1−σ(z))</span> 求梯度。先算单个样本：</p>
+<p class="formula">∂ℓ<sub>i</sub>/∂z<sub>i</sub> = y<sub>i</sub>(1−p<sub>i</sub>) − (1−y<sub>i</sub>)p<sub>i</sub> = y<sub>i</sub> − p<sub>i</sub></p>
+<p>再对参数求导（<span class="formula">∂z<sub>i</sub>/∂β = x<sub>i</sub></span>）：</p>
+<p class="formula">∇ℓ = Σ<sub>i</sub> (y<sub>i</sub> − p<sub>i</sub>)·[1, x<sub>i</sub>]　⇒　Xᵀ(y − p) = 0</p>
+<p>这就是<b>得分方程</b>，也是代码 <code>irls</code> 收敛判据的来源（自检 t3 量到梯度范数 1.49e−13）。它有两条值得记住的解读：</p>
+<p><b>解读一（矩匹配）</b>：方程说「残差与每个特征正交」。所以 Logistic 的解是让模型的一阶矩与数据的一阶矩对齐。<b>注意：它只匹配一阶矩</b>，不匹配二阶矩。而 LDA 通过 Σ̂ 明确使用了二阶矩。这个差别正是 §4.4 效率差异的来源。</p>
+<p><b>解读二（权重）</b>：每个样本的贡献被 <span class="formula">p<sub>i</sub>(1−p<sub>i</sub>)</span> 加权——越靠近边界的样本权重越大，越确认的样本权重越小。这意味着 Logistic 的解由<b>边界附近的样本</b>主导，远离边界的样本几乎不起作用。</p>
+
+<h3>3.3 凸性：为什么一定有唯一解</h3>
+<p>对梯度再求导，Hessian 为</p>
+<p class="formula">H = −XᵀWX，　W = diag(p<sub>i</sub>(1−p<sub>i</sub>)) ≻ 0</p>
+<p>因为 W 正定，<span class="formula">XᵀWX</span> 半正定，所以 H 半负定 ⇒ ℓ 是<b>凹函数</b>。凹函数的最大值集合是凸集；若 X 满秩且无完全分离，则是严格凹，最优解唯一。</p>
+<p>这条性质解释了一个实践差异：<b>Logistic 的优化是「稳」的</b>（凹、无局部极值、牛顿法二次收敛），而 LDA 的估计是「闭式但脆」的（一次矩阵求逆，条件数差就全盘皆输）。这也是为什么在高维或共线场景，人们宁可跑 Logistic 而不愿求 <span class="formula">Σ̂⁻¹</span>。</p>
+
+<h3>3.4 IRLS：把牛顿法写成加权最小二乘</h3>
+<p>牛顿步为 <span class="formula">β ← β − H⁻¹∇ℓ</span>，代入上面的梯度与 Hessian：</p>
+<p class="formula">β<sup>(t+1)</sup> = β<sup>(t)</sup> + (XᵀWX)⁻¹Xᵀ(y − p)</p>
+<p>把它改写成「对工作响应做加权最小二乘」的形式，就是 IRLS。定义</p>
+<p class="formula">z<sub>i</sub> = z<sub>i</sub><sup>(t)</sup> + (y<sub>i</sub> − p<sub>i</sub>)/[p<sub>i</sub>(1−p<sub>i</sub>)]</p>
+<p>则每步求解 <span class="formula">min<sub>β</sub> Σ<sub>i</sub> w<sub>i</sub>(z<sub>i</sub> − x<sub>i</sub>ᵀβ)²</span>。<b>这就是「重加权」三个字的字面意思</b>：权重 w 随当前参数更新，每轮解一个加权最小二乘。</p>
+<p>初始化的经典选择是 <span class="formula">p<sub>i</sub>=½</span>（此时 W=¼I，第一步退化为普通最小二乘）、<span class="formula">z<sub>i</sub>=y<sub>i</sub></span>。本实验的自检 t4 用 n=4000 验证了收敛解：<b>cos(β<sub>LDA</sub>, β<sub>logit</sub>) = 1.000</b>——在大样本下两条完全不同的算法给出了同一个方向。这是 §4.2 命题的实验前身。</p>
+
+<h3>3.5 L2 惩罚：两种解释，一个公式</h3>
+<p>加惩罚的目标函数是</p>
+<p class="formula">min<sub>β</sub> −ℓ(β) + (α/2)‖β‖²</p>
+<p>得分方程变成 <span class="formula">Xᵀ(y−p) = αβ</span>，Hessian 变成 <span class="formula">−(XᵀWX + αI)</span>，<b>严格负定</b>，所以即使数据完全分离也一定有唯一解。</p>
+<p>同一个 α 有两种读法：</p>
+<p><b>读法一（贝叶斯）</b>：等价于给 β 加上 <span class="formula">N(0, α⁻¹I)</span> 的先验，做 MAP 估计。α 大 = 先验强 = 收缩狠。</p>
+<p><b>读法二（数值）</b>：等价于对 <span class="formula">XᵀWX</span> 加一个「山脊」，把条件数压下来。当特征共线或 d&gt;n 时，没有这一项矩阵不可逆。</p>
+<p>本实验用的是<b>路径式</b>的 α = {100, 10, 1, 0.1, 0.01}，从强到弱、热启动，每个点独立做内层 5 折选优（论文表 4）。这样做的目的是让「Logistic 的表现」不被一个任意选的 α 决定——否则 RQ1–RQ5 的比较会退化成「谁的调参运气好」。</p>
+<p>一个常被忽略的细节：<b>惩罚通常不加在截距上</b>。因为截距承载的是类先验（§2.2 的第一项 <span class="formula">log(π<sub>1</sub>/π<sub>0</sub>)</span>），把它收缩向 0 等于强行假设两类等比例，会系统性地偏移决策面。</p>
+
+<h3>3.6 完全分离：Logistic 的「病」</h3>
+<p>如果存在某个方向能把两类完全分开（存在 β 使所有 <span class="formula">y<sub>i</sub>(x<sub>i</sub>ᵀβ)&gt;0</span>），则把 β 放大任意倍都能进一步降低损失，<b>似然上确界在无穷远，MLE 不存在</b>。表现为：迭代不收敛、系数发散、概率贴住 0/1。</p>
+<p>LDA 在这件事上「看起来更稳」，但那只是因为它没有优化过程——它直接求逆，得到的是一个有限（虽然可能很不可靠）的数。所以「LDA 更稳定」在完全分离场景是一个<b>假象</b>：两者都在给不可信的概率，只是一个发散、一个沉默地错（论文 §3.6-2 记录了这一条协议偏差与处理）。</p>
+<p>规范的解法是加 L2（§3.5）或改用 Firth 惩罚。本实验选了前者，并在协议里预先声明。</p>
+
+<h3>3.7 概率语义：两个模型说的不是同一件事</h3>
+<p>两个模型都输出 <span class="formula">σ(β<sub>0</sub>+xᵀβ)</span>，但含义不同：</p>
+<p><b>LDA 的概率是「生成式反演」</b>——先假设 x 怎么来，再用贝叶斯公式反推 P(y|x)。如果生成假设错了，反演就跟着错，而且错得系统性（§2.7 的过度自信）。</p>
+<p><b>Logistic 的概率是「判别式拟合」</b>——直接拟合 P(y|x) 的条件均值结构，不关心中间过程。它对分布形状的错误更宽容（因为没有用形状假设），但它只匹配一阶矩，因此在小样本、需要借用二阶结构时效率更低（§4.4）。</p>
+<p>一句话总结这一节：<b>LDA 用更多假设换更少方差，Logistic 用更少假设换更多偏差容忍</b>。当假设成立时，前者赢在效率；当假设破时，后者赢在稳健。而本实验的核心发现是——<b>在排序这个指标上，这个交换几乎不产生差异</b>（§4）。
+</p>
+
+
+<h2>4　为什么 LDA 好用的场合 Logistic 也会好用</h2>
+<p>这一节是全解的核心，也是论文 §4.1–§4.2 与 §5.1 的全部数学底稿。论点可以压成一句：</p>
+<p class="formula"><b>等协方差高斯成立时，两个模型是同一个模型；AUC 只看方向，而两个模型的方向在同一个点收敛。</b></p>
+<p>下面把它拆成三层命题，每层单独可证，合起来给出「几乎不能分开」的必然性。</p>
+
+<table class="data">
+<caption>表 3：三层命题的分工</caption>
+<tr><th>层</th><th>命题</th><th>它排除了什么</th></tr>
+<tr><td class="l">第一层　同族</td><td class="l">A1–A2 ⇒ LDA 的后验就是 logistic 形式</td><td class="l">「两者是不同的模型族」这一误解</td></tr>
+<tr><td class="l">第二层　同极限</td><td class="l">两估计量都 → β*，且差为 O<sub>p</sub>(n<sup>−1/2</sup>)</td><td class="l">「两者的差异随 n 增大而累积」</td></tr>
+<tr><td class="l">第三层　同排序</td><td class="l">AUC 只是方向的函数，ΔAUC 由方向差决定</td><td class="l">「截距/校准差异会污染 AUC 比较」</td></tr>
+</table>
+
+<h3>4.1 第一层：同一个模型族</h3>
+<p><b>命题 4.1</b>　若 A1（类条件高斯）与 A2（共享 Σ）成立，则</p>
+<p class="formula">P(y=1|x) = σ(β<sub>0</sub>+xᵀβ)，　β = Σ⁻¹Δ，　β<sub>0</sub> = log(π<sub>1</sub>/π<sub>0</sub>) − ½(μ<sub>1</sub>+μ<sub>0</sub>)ᵀΣ⁻¹Δ</p>
+<p><b>证明</b>　即 §2.2 的逐步代数，全部内容都在那里，此处不重复。</p>
+<p><b>这个命题的含义</b>：Logistic 的模型类 <span class="formula">{σ(β<sub>0</sub>+xᵀβ) : β<sub>0</sub>∈ℝ, β∈ℝ<sup>d</sup>}</span> 包含 LDA 在 A1–A2 下产生的那个具体成员。<b>LDA 是 Logistic 的一个参数子模型</b>——不是「近似」，不是「类似」，是子集关系。</p>
+<p><b>反向不成立</b>：Logistic 的后验线性不蕴含 x 服从等协方差高斯。所以严格地说，Logistic 的假设集更宽。这个不对称是后面所有讨论的起点：<b>LDA 的假设破了，Logistic 未必破；Logistic 的假设破了，LDA 一定也破（因为它假设更多）。</b></p>
+<p>注意这里的逻辑方向容易被讲反。常见说法是「LDA 假设强所以更脆弱」——对，但它的推论不是「所以 LDA 更差」，而是「所以 LDA 失效的场景是 Logistic 的失效场景的子集」。若一个场景里 LDA 仍然好用，说明它的强假设大致成立，那么弱的那个必然也成立。</p>
+
+<h3>4.2 第二层：同一个极限</h3>
+<p><b>命题 4.2</b>　在 A1–A3 下，且 <span class="formula">n<sub>0</sub>,n<sub>1</sub>→∞</span>、d 固定，则</p>
+<p class="formula">β̂<sub>LDA</sub> →<sub>p</sub> β*，　β̂<sub>logit</sub> →<sub>p</sub> β*，　且 β̂<sub>LDA</sub> − β̂<sub>logit</sub> = O<sub>p</sub>(n<sup>−1/2</sup>)</p>
+<p><b>证明（两半）</b></p>
+<p><b>(i) LDA 一侧</b>：<span class="formula">μ̂<sub>k</sub>→μ<sub>k</sub></span>、<span class="formula">Σ̂→Σ</span> 依概率（大数律），而 <span class="formula">β̂=Σ̂⁻¹(μ̂<sub>1</sub>−μ̂<sub>0</sub>)</span> 是这些量的连续函数（Σ 正定时求逆连续），故由连续映射定理 <span class="formula">β̂<sub>LDA</sub>→Σ⁻¹Δ=β*</span>。</p>
+<p><b>(ii) Logistic 一侧</b>：由命题 4.1，模型是<b>正确设定</b>的。总体得分方程为</p>
+<p class="formula">E[y−σ(β<sub>0</sub>+xᵀβ)]·[1,x] = 0</p>
+<p>在真值处，<span class="formula">E[y|x]=σ(β<sub>0</sub>*+xᵀβ*)</span>，故被积函数恒为 0，方程成立；又因 ℓ 严格凹（§3.3），解唯一。于是样本得分方程的解依概率收敛到总体解，即 <span class="formula">β̂<sub>logit</sub>→β*</span>。</p>
+<p><b>(iii) 差为 O<sub>p</sub>(n<sup>−1/2</sup>)</b>：两个估计量各自都是 √n 相合的（<span class="formula">√n(β̂−β*)</span> 渐近正态），故其差也是 <span class="formula">O<sub>p</sub>(n<sup>−1/2</sup>)</span>。两者之差<b>不随 n 累积，而是随 n 缩小</b>。</p>
+<p>这一半的意义值得单独强调：<b>常见的直觉「样本变大，两个模型的差异会更明显」是反的。</b>差异随 √n 缩小。样本越大，二者越像。自检 t4 就是这个命题的极端情形：n=4000 时 cos=1.000。</p>
+<p>还有一个细节让命题更可信：两侧的偏差方向并不相同。LDA 的偏差主要来自 <span class="formula">Σ̂⁻¹</span> 的反演放缩（§2.5，量级 O(d/n)）；Logistic 的偏差来自只用一阶矩（丢掉二阶结构）。两个偏差都随 n 消失，所以极限相同，但<b>小样本下的偏差方向可能相反</b>——这解释了为什么 ΔAUC 的符号会随 n 随机翻转（§4.5 的胜率证据）。</p>
+
+<h3>4.3 第三层：AUC 只看方向</h3>
+<p>这是三层里最锋利的一层，因为它把「差异」压缩到了一个维度上。</p>
+<p><b>命题 4.3（单调不变性）</b>　设 s(x) 为打分函数，g 为严格递增函数，则 <span class="formula">AUC(g∘s) = AUC(s)</span>。</p>
+<p><b>证明</b>　AUC 的成对定义是 <span class="formula">AUC = P(s(x<sub>1</sub>) &gt; s(x<sub>0</sub>) | y<sub>1</sub>=1, y<sub>0</sub>=0)</span>。由于 g 严格递增，事件 <span class="formula">{s<sub>1</sub>&gt;s<sub>0</sub>}</span> 与 <span class="formula">{g(s<sub>1</sub>)&gt;g(s<sub>0</sub>)}</span> 完全相同（连续打分下无并列），故概率相等。</p>
+<p><b>推论 4.3.1（截距不得入内）</b>　线性打分 <span class="formula">s(x)=β<sub>0</sub>+xᵀβ</span> 中，β<sub>0</sub> 对每个样本都加同一个常数，是严格递增变换，故<b>截距不影响 AUC</b>。</p>
+<p>这条推论解决了一个长期困扰：为什么 LDA 与 Logistic 的先验/校准差别那么大，AUC 却几乎一样？因为先验只进截距（§2.3），而截距被 AUC 完全无视。</p>
+<p><b>推论 4.3.2（ΔAUC 完全由方向差决定）</b>　两个线性模型的打分之差只可能来自 (a) 方向不同、(b) 截距不同。由 4.3.1，(b) 不产生任何 AUC 差异。所以</p>
+<p class="formula">ΔAUC = 0　当且仅当　β̂<sub>LDA</sub> 与 β̂<sub>logit</sub> 指向同一方向</p>
+<p><b>这是整个实验的解释框架。</b>它告诉我们：ΔAUC 不是「模型好坏」的度量，而是「两个估计方向差多少」的度量。于是「36 个点里 27 个 ΔAUC 落在 ±0.005 内」这句话，翻译过来就是「27 个点上两个方向几乎重合」——而由命题 4.2，这本就该发生。</p>
+
+<h3>4.4 残余差异：为什么不是零，而是千分位</h3>
+<p>既然极限相同、排序只看方向，为什么 ΔAUC 不是精确的 0？因为<b>有限样本下两个方向的估计误差不同</b>。三个具体来源：</p>
+<p><b>(1) 参数计数不同。</b>LDA 估 <span class="formula">d + d(d+1)/2 + 1</span> 个参数（均值、Σ 的上三角、先验）；Logistic 只估 <span class="formula">d+1</span> 个。在 A1–A2 成立时，前者是有效估计（达到 Cramér–Rao 界），后者只用了一阶矩，因此<b>方差更大</b>。这是经典的效率损失，量级是常数因子，不随 n 变。</p>
+<p><b>(2) 加权方式不同。</b>Logistic 的每个样本被 <span class="formula">p(1−p)</span> 加权（§3.2），边界附近的样本主导解；LDA 对所有样本等权（只用均值与协方差）。若边界附近恰有少量异常点，Logistic 的方向会被它们拉动，而 LDA 相对不敏感。</p>
+<p><b>(3) 逆矩阵的病态。</b>LDA 走 <span class="formula">Σ̂⁻¹</span>，当 d/n 不小或 Σ 近奇异时，方向被放大且不稳定（§2.5–§2.6）。Logistic 走凸优化，没有求逆这一步，因此在病态场景反而更稳（这也是为什么我们的 λ 轴与 γ 轴最终都由 Logistic 拿分，§5）。</p>
+<p>三者叠加的结果是：<b>两个方向相差 O<sub>p</sub>(n<sup>−1/2</sup>)，符号由噪声决定</b>。这就是「千分位」的来源——在 n=300、d=5 的干净场景，两个方向的夹角标准差量到 0.060（LDA）与 0.062（logit）弧度，而对应的 ΔAUC 只有 ±0.001 量级。</p>
+<p>一个有用的白化类比：在 <span class="formula">u=Σ<sup>1/2</sup>x</span> 空间里，LDA 的最优方向就是 <span class="formula">u</span> 空间中的均值差方向（因为 Σ 变成 I）。Logistic 拟合的是同一件事，只是它不知道「u 空间里球的半径是 1」，得从数据里学。学到的东西差不多，所以方向差不多。<b>「差不多」的定量含义就是 O<sub>p</sub>(n<sup>−1/2</sup>)。</b></p>
+
+<h3>4.5 三条实证证据</h3>
+<p><b>证据一：36 个比较点的判定分布。</b>27 个未分、6 个系统性平局、2 个 Logistic 胜、1 个 LDA 胜。如果两者真有系统性的能力差，判定分布应该严重偏斜；实际是压倒性地「分不出」（论文 §4.1）。</p>
+<p><b>证据二：方向的一致性随 n 收敛。</b>干净场景 n=300、d=5 时，两个方向的夹角标准差是 0.060 与 0.062；自检 t4 在 n=4000 时 cos=1.000。而乳腺锚点（假设明显破）的 cos 只有 0.50——<b>方向分裂只发生在假设破的地方</b>，且即便分裂，AUC 也只差 −0.0042，因为分裂发生在低方差方向上。</p>
+<p><b>证据三：n 轴的胜率是一条带噪声的平线。</b>n∈{40,60,100,200,500,1000,2000} 时，LDA 胜率在 0.477（n=2000）至 0.563（n=1000、d=2 变体）之间摆动，没有任何单调趋势；R=200 时胜率的标准误约 3.5 个百分点，这个带完全落在噪声内。拟合出的交叉点 n*≈2641 落在观测网格之外，按协议标为「外推」，不构成结论。</p>
+<p>这三条证据合起来，构成了对「几乎不能分开」的三角验证：<b>判定层分不出、方向层随时间收敛、噪声层解释得通</b>。</p>
+
+<h3>4.6 三个推论</h3>
+<p><b>推论一（证据的可迁移性）。</b>任何「LDA 在这个问题上表现好」的证据，同时也是「Logistic 会表现好」的证据——因为前者成立意味着 A1–A2 大致成立，而由命题 4.1–4.2，后者必然也好。反过来不成立：Logistic 好不蕴含 LDA 好。这就是为什么教科书里「小样本用 LDA」的建议在本实验的坐标系下没有获得支持（论文 §4.2）。</p>
+<p><b>推论二（选型应看二阶维度）。</b>既然排序层不可分，模型选择的信息只能来自概率、阈值与代价这几层。论文给出的证据是：乳腺锚点上 Brier 相差 6.5 倍（0.131 对 0.020）、logloss 0.658 对 0.078；在 w=5 的代价下，误分类代价相差约 9 倍。这些差异不在 AUC 里，<b>报告 AUC 就永远看不见它们</b>。</p>
+<p><b>推论三（「无差异」是可证伪的命题）。</b>由推论 4.3.2，ΔAUC≈0 等价于方向几乎重合，这是一个<b>强</b>陈述，不是「我们没测出来」。它可能被推翻：只要找到一个场景使两个方向系统性分裂，ΔAUC 就会显著。本实验确实找到了三个这样的场景（γ 轴、λ 轴的代价层、乳腺锚点的概率层），它们全部落在「假设被违背」的区域（§5）。</p>
+<p><b>一句话收束</b>：LDA 与 Logistic 的关系不是「两个竞争对手」，而是「同一个几何对象的两种参数化」。在等协方差高斯的区域内，它们只是在用不同的误差去逼近同一个方向；一旦离开这个区域，它们才真的开始讲不同的故事。</p>
+
+
+<h2>5　什么时候才分得开：五个分岔机制</h2>
+<p>§4 说「假设成立时不可分」。本节反过来问：<b>假设破到什么程度，二者才开始讲不同的故事？</b>实验给出的答案是五个机制，每个机制都对应一个可核对的数字。</p>
+
+<h3>5.1 机制一：协方差分歧（λ 轴）——两方一起死，第三方捡漏</h3>
+<p>λ 只放大正类的一半维度（§1.2）。λ&gt;0 时贝叶斯最优判别式变成二次的，两个线性模型<b>共用一个失效原因</b>，所以它们的相对排名几乎不动：</p>
+<p class="formula">λ=0：ΔAUC=0.0000，p=1.000，胜率 0.482（未判定）　　λ=0.8：ΔAUC=−0.0004，p=0.41，胜率 0.453（未判定）</p>
+<p>λ 从 0 扫到 1，ΔAUC 始终没有越过 0.005 的门槛，胜率拟合出的交叉点 λ*≈0.50 被判为噪声。但<b>绝对水平在塌</b>：AUC 上界随 λ 单调下降。而 Quadratic Discriminant Analysis（QDA，允许 Σ<sub>0</sub>≠Σ<sub>1</sub>）在同一网格上把 AUC 拉回 0.892，Brier 从约 0.20 降到 0.132。</p>
+<p><b>这一格的教训</b>：模型比较必须区分「相对」与「绝对」。当天花板本身在下降时，两个模型谁高谁低已经不重要——<b>重要的是「错在模型族，不在选手」</b>（论文 §4.3 的标题即此）。这也解释了为什么「是否存在一方更抗错」这个 RQ2 的原问法，在本坐标系下得到的是否定答案：没有一方更抗错，因为两者错的方式相同。</p>
+
+<h3>5.2 机制二：分布形状（γ 轴）——唯一真正的交叉区域</h3>
+<p>γ 是保序的双射，<b>不改变贝叶斯上界</b>（论文附录 C.3）：它只改变估计的难度，不改变可分性。正因为上界不动，任何差异都只能来自估计，于是天平开始倾斜：</p>
+<table class="data">
+<caption>表 4：γ 轴的单调倾斜（n=300，d=5，λ=0）</caption>
+<tr><th>γ</th><th>ΔAUC（LDA−Logit）</th><th>p（Holm）</th><th>LDA 胜率</th><th>判定</th></tr>
+<tr><td>1.0</td><td>+0.0003</td><td>0.40</td><td>0.530</td><td>未判定</td></tr>
+<tr><td>1.3</td><td>−0.0007</td><td>0.017</td><td>0.420</td><td>系统性平局</td></tr>
+<tr><td>1.6</td><td>−0.0027</td><td>2.8e−7</td><td>0.335</td><td>系统性平局</td></tr>
+<tr><td>2.0</td><td>−0.0086</td><td>≈0</td><td>0.215</td><td>Logistic 胜</td></tr>
+</table>
+<p>四个量同时单调：ΔAUC 从 +0.0003 掉到 −0.0086，p 从 0.40 掉到 0，胜率从 0.530 掉到 0.215。<b>这是全实验唯一一处「方向性一致且随参数单调」的证据</b>，也是唯一被判为「有胜负」的合成网格点。胜率 logit 拟合出的交叉点在 γ*≈1.08。</p>
+<p><b>为什么是 Logistic 赢？</b>两个原因叠在一起。其一，LDA 用样本均值与样本协方差，而幂变换 γ&gt;1 把分布拉出长尾，<b>高阶矩被尾部少数点支配</b>，矩估计的效率暴跌；Logistic 不估矩，直接用似然，对尾部不敏感。其二，LDA 的 <span class="formula">Σ̂⁻¹</span> 在重尾下更病态（§2.5 的放大因子被异常值进一步推高），方向更容易被拉偏。</p>
+<p>值得强调<b>量级</b>：γ=2 时 ΔAUC 只有 0.0086，仍然是「百分位」而不是「十分位」。即使假设被明显违背，排序能力的差距依然很小——这恰恰再次印证 §4.3：<b>AUC 对分布形状极不敏感</b>。</p>
+
+<h3>5.3 机制三：估计崩塌（d 接近 n）——本实验没有进入的区域</h3>
+<p>理论上 LDA 真正会崩的地方是 <span class="formula">d</span> 与 <span class="formula">n</span> 同阶：<span class="formula">Σ̂</span> 的秩最多 <span class="formula">min(n−2, d)</span>，当 <span class="formula">d ≥ n</span> 时不可逆，LDA 直接失效；当 <span class="formula">d/n</span> 接近 0.3 时，§2.5 的放大因子已经到 1.4 以上，方向明显不稳。</p>
+<p><b>必须诚实说明的是：本实验的 d 轴没有进入这个区域。</b>d 从 2 扫到 50，固定 n=300，<span class="formula">d/(n−2) ≤ 0.17</span>，放大因子约 1.2。结果也正是「无差异」：d 轴上 ΔAUC 的绝对值全部不超过 0.0012（d=50 时为 −0.0012），Holm 校正后的 p 全部不低于 0.08；胜率从 d=2 的 0.517 单调降到 d=50 的 0.440，方向上略偏 Logistic，但没有任何一点越过判定门槛。</p>
+<p>因此论文 §4.2 的表述是「教科书『小样本选 LDA』在本坐标系未获支持」，而<b>不是</b>「该教科书结论错误」。二者差别很大：前者是关于我们这 36 个点的陈述，后者是关于所有数据的断言。若要检验后者，d 轴必须推到 <span class="formula">d/n ≳ 0.3</span>，这是本工作明确的局限（论文 §5.3）。</p>
+
+<h3>5.4 机制四：代价层——阈值把千分位放大成数量级</h3>
+<p>这是全实验最有实践价值的一格。设定漏报权重 w=5（漏一个正类比误一个负类贵 5 倍），比较两种阈值策略：固定 τ=0.5，与在内层交叉验证上选出的 τ*。</p>
+<table class="data">
+<caption>表 5：τ=0.5 与 τ* 的代价比（w=5）</caption>
+<tr><th>锚点</th><th>LDA 的 τ*</th><th>代价放大约数</th><th>主要成因</th></tr>
+<tr><td class="l">乳腺（BCW）</td><td>0.05（贴下界）</td><td>≈9×</td><td>概率过度自信，τ* 被推到边界</td></tr>
+<tr><td class="l">心脏（StatLog）</td><td>0.055</td><td>≈2×</td><td>同上，程度较轻</td></tr>
+<tr><td class="l">Pima（keep0）</td><td>未贴界</td><td>≈1.2×</td><td>校准尚可</td></tr>
+</table>
+<p>为什么 τ* 会贴在 0.05 的下界？因为 LDA 在这个锚点上的概率<b>过度自信</b>（§2.7）：正类样本的概率被推到接近 1，负类接近 0，于是「把阈值压低以多召回」的收益极大，最优点一路走到搜索区间的边缘。这本身就是一个信号：<b>当最优阈值贴住搜索边界时，通常说明概率尺度错了，而不是阈值真的该在那里。</b></p>
+<p>这一格回答了「千分位 AUC 差异有什么意义」这个质疑：<b>在排序层差异是千分位，在代价层差异是数量级。</b>因为代价函数对概率的<b>绝对值</b>敏感，而 AUC 完全无视绝对值（推论 4.3.1）。同一个模型，AUC 差 0.004，代价差 9 倍——两句话都对，只是回答不同的问题。</p>
+
+<h3>5.5 机制五：概率层——AUC 的盲区</h3>
+<p>乳腺锚点是五个机制里最锋利的一个：</p>
+<p class="formula">ΔAUC = −0.0042（判为系统性平局）　但 Brier：0.131（LDA）vs 0.020（Logit）＝ 6.5 倍</p>
+<p class="formula">logloss：0.658 vs 0.078　　cos(β<sub>LDA</sub>, β<sub>logit</sub>) = 0.50</p>
+<p>三个数字放在一起读：<b>方向分裂了一半（cos=0.50），排序却几乎没差（ΔAUC=−0.0042），概率差了 6.5 倍</b>。这不是矛盾，而是几何的必然：两个方向在高方差方向上的分歧对排序影响大，在低方差方向上的分歧对排序影响小；而概率的绝对值对<b>所有</b>方向的缩放都敏感。LDA 走 <span class="formula">Σ̂⁻¹</span>，把低方差方向的噪声放大成了 logit 的巨大偏移，于是排序没怎么变、概率全错了。</p>
+<p>这也解释了为什么论文反复强调「报告应当报概率」：<b>AUC 是一个对单调变换免疫的指标，它天生看不见校准失败。</b>一个模型可以 AUC=0.85 却给出完全无用的概率，而任何只报 AUC 的评估都发现不了。</p>
+
+<h2>6　论文逐节精读</h2>
+<p>本节按论文顺序，标出每节的意图、关键数字与易误读处。读论文时可当对照表用。</p>
+<table class="data">
+<caption>表 6：论文各节的意图与陷阱</caption>
+<tr><th>论文位置</th><th>它在说什么</th><th>容易误读成</th></tr>
+<tr><td class="l">§1 引言</td><td class="l">提问：两个几乎等价的模型，差异藏在哪一层？</td><td class="l">「又要证明 LDA 过时了」</td></tr>
+<tr><td class="l">§2 预备知识</td><td class="l">把「假设」形式化成 λ、γ 两个旋钮，定义四个量</td><td class="l">「四个量可以互相替代」</td></tr>
+<tr><td class="l">§3 方法</td><td class="l">数据、冻结协议、模型、生成器、度量、偏差记录</td><td class="l">「§3.6 是补丁，可以跳过」</td></tr>
+<tr><td class="l">§4.1 总览</td><td class="l">36 点的判定分布：27 未分 / 6 平局 / 2 Logit / 1 LDA</td><td class="l">「未分 = 实验失败」</td></tr>
+<tr><td class="l">§4.2 n 与 d 轴</td><td class="l">两条轴都平；教科书建议未获支持</td><td class="l">「证明教科书错了」</td></tr>
+<tr><td class="l">§4.3 λ 轴</td><td class="l">天花板共同坍塌，QDA 捡回</td><td class="l">「Logistic 更抗协方差违背」</td></tr>
+<tr><td class="l">§4.4 γ 轴</td><td class="l">唯一的单调交叉区，γ*≈1.08</td><td class="l">「偏态就选 Logistic」</td></tr>
+<tr><td class="l">§4.5 RQ5</td><td class="l">概率→阈值→代价，代价差 9 倍</td><td class="l">「AUC 差不多就没差别」</td></tr>
+<tr><td class="l">§4.6 综合</td><td class="l">交叉区域地图：可分性在哪、可估计性在哪</td><td class="l">「一张总图能替代分轴讨论」</td></tr>
+<tr><td class="l">§5 讨论</td><td class="l">梯子的每一级、与文献对话、局限</td><td class="l">「局限是客套话」</td></tr>
+<tr><td class="l">附录 A</td><td class="l">超参数与预注册常量</td><td class="l">「常量表不重要」——它是可复现的锚</td></tr>
+<tr><td class="l">附录 C</td><td class="l">五条补充推导</td><td class="l">「附录可以不读」</td></tr>
+<tr><td class="l">附录 E</td><td class="l">36 点全表，逐行可查</td><td class="l">「只看正文的代表点就够」</td></tr>
+</table>
+<p>三处最值得反复读的地方：<b>§3.6</b> 记录了协议偏差与修正（包括完全分离的处理），这是复现诚信的核心；<b>§4.3</b> 的「错在模型族不在选手」是全篇最反直觉的一句；<b>§4.5</b> 从 AUC 跳到代价的那一步，是全篇实用价值的落点。</p>
+
+<h2>7　十条常见误解</h2>
+<p><b>Q1　AUC 只差千分位，这篇论文还有意义吗？</b><br>有意义，而且千分位正是结论本身。预注册要检验的命题是「两者是否可分」，千分位是<b>支持</b>这个命题的证据，不是它的反例。真正的价值在下一层：同样的数据，概率差 6.5 倍、代价差 9 倍。</p>
+<p><b>Q2　胜率 0.215 与「判定 Logistic 胜」是一回事吗？</b><br>不是。判定需要 p<sub>Holm</sub>&lt;0.05 <b>且</b> |ΔAUC|&gt;0.005 双条件；胜率只是符号一致性。γ=1.6 就是反例：胜率 0.335、p=2.8e−7（极显著），但 |ΔAUC|=0.0027 &lt; 0.005，判为系统性平局。<b>显著性说的是「方向稳」，幅度说的是「差得多」。</b></p>
+<p><b>Q3　为什么 λ 轴没出现「Logistic 更抗协方差违背」？</b><br>因为两者错的方式相同：λ&gt;0 使最优边界变成二次，而两个模型的边界都是线性的。<b>它们对付不了同一个东西，所以相对排名不动。</b>能抗的是 QDA，不是 Logistic。</p>
+<p><b>Q4　既然 AUC 差不多，直接选简单的那个行不行？</b><br>不行，理由见 Q1。而且「简单」在这里也不成立：Logistic 要跑 IRLS 加 α 路径加内层 5 折，LDA 只需一次求逆。真正该问的是「我要的是排序、概率还是代价」：排序层随便选，概率层选 Logistic，代价层必须先看校准。</p>
+<p><b>Q5　LDA 的系数能当特征重要性用吗？</b><br>不能。系数依赖单位、标准化方式、参照类（one-hot）与共变量（§2.6 的 P1）。换一个编码，系数全变，而 AUC 不变。要谈重要性，应报告<b>标准化后的方向</b>或直接做置换重要性。</p>
+<p><b>Q6　cos=0.50 但 AUC 只差 0.0042，说明什么？</b><br>说明<b>方向分歧集中在对排序影响小的方向上</b>。这是 AUC 盲区的第二种表现（第一种是截距，§4.3.1）。它同时提醒：不要用「AUC 一致」去推断「模型一致」。</p>
+<p><b>Q7　乳腺锚点为什么判「系统性平局」而不是「Logistic 胜」？</b><br>因为 ΔAUC=−0.0042，没越过 0.005。虽然胜率是 0.000（10 次重复 LDA 一次没赢）且 p=0.024，但<b>幅度条件不满足</b>。这条判定如实反映了规则：稳定的小差异不改判。</p>
+<p><b>Q8　最优阈值贴在下界 0.05，是 bug 吗？</b><br>不是 bug，是信号。它说明概率尺度偏了（过度自信），最优点被推到搜索区间边缘。规范做法是先校准（Platt / isotonic），再选阈值；或者直接把 τ 的搜索区间放宽并检查是否仍贴界。</p>
+<p><b>Q9　这套结论能外推到真实临床吗？</b><br>不能。三个锚点都是教学数据、单一 80/20 划分、n 有限，且正类定义是人为指定的。论文 §5.3 已明确声明。可外推的只有方法论：<b>把假设拆成旋钮、先冻结协议、分层报告四个量。</b></p>
+<p><b>Q10　如果重做一次，最该改什么？</b><br>两件事：把 d 轴推到 d/n≳0.3（§5.3 的空缺），以及在 γ 轴上加密到 1.0–1.4 之间（交叉点 γ*≈1.08 目前只有两个点夹着，精度不足）。其余部分的表现已经足够支撑现有结论。</p>
+
+<h2>附录 A　公式速查</h2>
+<table class="data">
+<caption>表 7：核心公式一览</caption>
+<tr><th>名称</th><th>表达式</th><th>出处</th></tr>
+<tr><td class="l">LDA 方向</td><td class="l">β = Σ⁻¹(μ<sub>1</sub>−μ<sub>0</sub>)</td><td class="l">§2.2，论文定义 2.2</td></tr>
+<tr><td class="l">LDA 截距</td><td class="l">β<sub>0</sub> = log(π<sub>1</sub>/π<sub>0</sub>) − ½(μ<sub>1</sub>+μ<sub>0</sub>)ᵀΣ⁻¹Δ</td><td class="l">§2.2</td></tr>
+<tr><td class="l">Fisher 准则</td><td class="l">J(w) = (wᵀΔ)²/(wᵀΣw) ≤ d′²</td><td class="l">§2.4</td></tr>
+<tr><td class="l">标准化均值差</td><td class="l">d′ = √(ΔᵀΣ⁻¹Δ)</td><td class="l">§2.4，§1.1</td></tr>
+<tr><td class="l">贝叶斯上界</td><td class="l">AUC* = Φ(d′/√2)</td><td class="l">论文附录 C.2</td></tr>
+<tr><td class="l">Σ̂⁻¹ 的偏差</td><td class="l">E[Σ̂⁻¹] = [(n−2)/(n−2−d−1)]Σ⁻¹</td><td class="l">§2.5</td></tr>
+<tr><td class="l">Logistic 得分方程</td><td class="l">Xᵀ(y−p) = 0</td><td class="l">§3.2</td></tr>
+<tr><td class="l">IRLS 更新</td><td class="l">β ← β + (XᵀWX)⁻¹Xᵀ(y−p)</td><td class="l">§3.4</td></tr>
+<tr><td class="l">L2 得分方程</td><td class="l">Xᵀ(y−p) = αβ</td><td class="l">§3.5</td></tr>
+<tr><td class="l">AUC 单调不变</td><td class="l">AUC(g∘s)=AUC(s)，g 严格递增</td><td class="l">§4.3</td></tr>
+<tr><td class="l">ΔAUC 的判据</td><td class="l">ΔAUC=0 ⟺ β̂<sub>LDA</sub> ∥ β̂<sub>logit</sub></td><td class="l">§4.3 推论 4.3.2</td></tr>
+<tr><td class="l">代价</td><td class="l">5·FN + FP（w=5 主场景）</td><td class="l">论文表 4</td></tr>
+<tr><td class="l">判定三分</td><td class="l">p&lt;0.05 ∧ |ΔAUC|&gt;0.005</td><td class="l">论文定义 2.6</td></tr>
+</table>
+
+<h2>附录 B　公式与代码的对照</h2>
+<p>所有实验数字都能在 <code>experiment/lda_log_lab.py</code> 里找到对应实现。下表给出关键映射，便于复核。</p>
+<table class="data">
+<caption>表 8：公式 ↔ 代码</caption>
+<tr><th>内容</th><th>代码位置</th></tr>
+<tr><td class="l">协方差生成 <span class="formula">Σ<sub>k</sub>(λ)</span></td><td class="l"><code>sigma_vec</code>，约第 169 行</td></tr>
+<tr><td class="l">数据生成 <span class="formula">gen_sample</span>（含 γ 变换）</td><td class="l">约第 176 行</td></tr>
+<tr><td class="l">贝叶斯最优打分（含二次项）</td><td class="l"><code>lr_score</code>，约第 190 行</td></tr>
+<tr><td class="l">贝叶斯上界（闭式 / MC）</td><td class="l"><code>bayes_auc_mc</code> 及其缓存版，约第 196 行</td></tr>
+<tr><td class="l">LDA 的 <span class="formula">β<sub>0</sub></span> 写死形式</td><td class="l">第 305 行 <code>beta0 = −0.5*(c1−c0) + log(π1/π0)</code></td></tr>
+<tr><td class="l">特征变换 / 设计矩阵</td><td class="l"><code>design</code>，约第 257 行</td></tr>
+<tr><td class="l">IRLS 求解</td><td class="l"><code>irls</code>，约第 327 行</td></tr>
+<tr><td class="l">代价计算</td><td class="l"><code>cost_at_tau</code></td></tr>
+<tr><td class="l">单点重复实验</td><td class="l"><code>run_rep</code> / <code>run_point</code></td></tr>
+</table>
+<p>复核建议：先跑 <code>python experiment/lda_log_lab.py --selftest</code>（t1–t9），其中 t3 验证 IRLS 的梯度范数（≈1.5e−13）、t4 验证 <span class="formula">cos(β<sub>LDA</sub>,β<sub>logit</sub>)=1.000</span>（n=4000）、t5 验证 <span class="formula">AUC*=Φ(d′/√2)</span> 的闭式（0.8500）与 MC（0.8481）一致。<b>这三条正好对应本文 §3.2、§4.2、§2.4 的核心命题。</b></p>
+
+<h2>附录 C　术语表</h2>
+<table class="data">
+<caption>表 9：术语</caption>
+<tr><th>术语</th><th>含义</th></tr>
+<tr><td class="l">等协方差高斯</td><td class="l">两类条件分布均为正态且共享协方差矩阵 Σ<sub>0</sub>=Σ<sub>1</sub>=Σ</td></tr>
+<tr><td class="l">贝叶斯上界</td><td class="l">真后验可达的最优 AUC，任何模型的性能天花板</td></tr>
+<tr><td class="l">区分度 d′</td><td class="l">标准化均值差 √(ΔᵀΣ⁻¹Δ)，与 AUC 一一对应（等协方差下）</td></tr>
+<tr><td class="l">系统性平局</td><td class="l">方向稳定（p 显著）但幅度 &lt; 0.005 的判定类别</td></tr>
+<tr><td class="l">胜率</td><td class="l">重复实验中 LDA 的 AUC 高于 Logit 的比例</td></tr>
+<tr><td class="l">交叉点</td><td class="l">胜率对参数作 logit 回归后取 0.5 的位置</td></tr>
+<tr><td class="l">完全分离</td><td class="l">存在超平面把两类完全分开，导致 Logistic 的 MLE 不存在</td></tr>
+<tr><td class="l">校准</td><td class="l">预测概率与实际频率的一致性，用 Brier 或可靠性曲线衡量</td></tr>
+<tr><td class="l">收缩估计</td><td class="l">把 Σ̂ 朝 I 或对角阵拉，缓解 <span class="formula">Σ̂⁻¹</span> 的病态</td></tr>
+</table>
+
+<footer>
+<p>本文件为 <code>report/linear-models-paper.html</code> 的配套全解，不引入新实验。所有数字来自论文与 <code>experiment/lda_log_lab.py</code> 的产物；推导部分为独立撰写，若与论文附录有出入，以论文附录为准并向作者反馈。</p>
+<p>协议冻结日期：2026-11-03 · 全解撰写：2026-11-04 · 环境：Python 3.12 / NumPy 1.26.2</p>
+</footer>
+
+</div>
+</body>
+</html>

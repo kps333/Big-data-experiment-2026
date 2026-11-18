@@ -1,0 +1,7 @@
+train (341, 32) valid (114, 32) test (114, 32) features 30
+D:\conda\envs\cp310\lib\site-packages\sklearn\utils\validation.py:2749: UserWarning: X does not have valid feature names, but DecisionTreeClassifier was fitted with feature names
+  warnings.warn(
+D:\conda\envs\cp310\lib\site-packages\sklearn\utils\validation.py:2749: UserWarning: X does not have valid feature names, but DecisionTreeClassifier was fitted with feature names
+  warnings.warn(
+test set: (114, 30) positive: 42
+wrote D:\M\大数据实践\10. Ensemble\results\results.json
